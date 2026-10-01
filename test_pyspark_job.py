@@ -46,3 +46,13 @@ def test_amount_with_tax_calculated_correctly(spark):
     df = spark.createDataFrame([("Ali", 100.0)], SCHEMA)
     row = clean_data(df).collect()[0]
     assert row["amount_with_tax"] == pytest.approx(120.0)
+
+def test_null_amount_removed(spark):
+    df = spark.createDataFrame([("Ali", None), ("Sara", 50.0)], SCHEMA)
+    result = clean_data(df).collect()
+    assert len(result) == 1
+    assert result[0]["name"] == "Sara"
+
+def test_output_columns(spark):
+    df = spark.createDataFrame([("Ali", 100.0)], SCHEMA)
+    assert clean_data(df).columns == ["name", "amount", "amount_with_tax"]
